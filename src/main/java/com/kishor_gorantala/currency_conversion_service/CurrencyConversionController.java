@@ -25,9 +25,9 @@ public class CurrencyConversionController {
     @GetMapping("/currency-conversion/feign/from/{from}/to/{to}/quantity/{quantity}")
     public CurrencyConversion CalculatedCurrencyFeign(@PathVariable String from, @PathVariable String to, @PathVariable BigDecimal quantity){
 
-        CurrencyConversion currencyConversion = proxy.retrieveExchangeValue(from, to);
+            CurrencyConversion currencyConversion = proxy.retrieveExchangeValue(from, to);
+            return new CurrencyConversion(currencyConversion.getId(),from,to,currencyConversion.getConversionMultiple(),quantity,currencyConversion.getEnvironment()+" from Feign ",quantity.multiply(currencyConversion.getConversionMultiple()));
 
-        return new CurrencyConversion(currencyConversion.getId(),from,to,currencyConversion.getConversionMultiple(),quantity,currencyConversion.getEnvironment()+" from Feign ",quantity.multiply(currencyConversion.getConversionMultiple()));
     }
 
 
@@ -35,17 +35,18 @@ public class CurrencyConversionController {
     @GetMapping("/currency-conversion/restTemplate/from/{from}/to/{to}/quantity/{quantity}")
     public CurrencyConversion CalculatedCurrency(@PathVariable String from, @PathVariable String to, @PathVariable BigDecimal quantity){
 
-        HashMap<String,String> UriVariables = new HashMap<>();
+            HashMap<String,String> UriVariables = new HashMap<>();
 
-        UriVariables.put("from",from);
-        UriVariables.put("to",to);
+            UriVariables.put("from",from);
+            UriVariables.put("to",to);
 
-        ResponseEntity<CurrencyConversion> forEntity = new RestTemplate().getForEntity("http://localhost:8000/currency-exchange/from/{from}/to/{to}", CurrencyConversion.class, UriVariables);
+            ResponseEntity<CurrencyConversion> forEntity = new RestTemplate().getForEntity("http://localhost:8000/currency-exchange/from/{from}/to/{to}", CurrencyConversion.class, UriVariables);
 
-        CurrencyConversion currencyconversion = forEntity.getBody();
+            CurrencyConversion currencyconversion = forEntity.getBody();
 
-        return new CurrencyConversion(currencyconversion.getId(),from,to,currencyconversion.getConversionMultiple(),quantity,currencyconversion.getEnvironment()+" From Rest Template",quantity.multiply(currencyconversion.getConversionMultiple()));
-    }
+            return new CurrencyConversion(currencyconversion.getId(),from,to,currencyconversion.getConversionMultiple(),quantity,currencyconversion.getEnvironment()+" From Rest Template",quantity.multiply(currencyconversion.getConversionMultiple()));
+
+         }
 
 
 
